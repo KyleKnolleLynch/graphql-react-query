@@ -1,25 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import gql from 'graphql-tag'
+import { useGQLQuery } from './useGQLQuery'
 
-function App() {
+const GET_COUNTRIES = gql`
+  query {
+    countries {
+      code
+      name
+    }
+  }
+`
+
+const GET_COUNTRY = gql`
+  query($code: ID!) {
+    country(code: $code) {
+      name
+    }
+  }
+`
+
+const App = () => {
+  //  Fetch data from custom hook using react-query
+  const { data, isLoading, error } = useGQLQuery('countries', GET_COUNTRY, {
+    code: 'BY'
+  })
+
+  console.log(data)
+
+  if (isLoading) return <div>Loading ...</div>
+  if (error) return <div>Error! Something went wrong ...</div>
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      Country: {data.country.name}
+      {/* {data.countries.map(country => (
+        <div key={country.name}>{country.name}</div>
+      ))} */}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
